@@ -90,6 +90,8 @@ github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kB
 github.com/bitly/go-hostpool v0.0.0-20171023180738-a3a6125de932/go.mod h1:NOuUCSz6Q9T7+igc/hlvDOUdtWKryOrtFyIVABv/p7k=
 github.com/bkaradzic/go-lz4 v1.0.0/go.mod h1:0YdlkowM3VswSROI7qDxhRvJ3sLhlFrRRwjwegp5jy4=
 github.com/blacktear23/go-proxyprotocol v0.0.0-20180807104634-af7a81e8dd0d/go.mod h1:VKt7CNAQxpFpSDz3sXyj9hY/GbVsQCr0sB3w59nE7lU=
+github.com/blacktear23/tidb v0.0.0-20210120145905-c19f2717cfb2 h1:c6TstceOGqZgt+LP4AD81Mnz1EXGYAT/ICwTAtDurxA=
+github.com/blacktear23/tidb v0.0.0-20210120145905-c19f2717cfb2/go.mod h1:MnZM41rnb/ym2wui2jmhHNFsHmE57RYh+qTHcL71VSI=
 github.com/blevesearch/bleve v1.0.7/go.mod h1:3xvmBtaw12Y4C9iA1RTzwWCof5j5HjydjCTiDE2TeE0=
 github.com/blevesearch/bleve v1.0.8-0.20200520165604-f0ded112bb1b/go.mod h1:3xvmBtaw12Y4C9iA1RTzwWCof5j5HjydjCTiDE2TeE0=
 github.com/blevesearch/blevex v0.0.0-20190916190636-152f0fe5c040/go.mod h1:WH+MU2F4T0VmSdaPX+Wu5GYoZBrYWdOZWSjzvYcDmqQ=

@@ -10,7 +10,12 @@ import (
 
 	"github.com/pingcap/tidb/sessionctx/stmtctx"
 	"github.com/pingcap/tidb/types"
+	"github.com/pingcap/tidb/util/collate"
 )
+
+func init() {
+	collate.EnableNewCollations()
+}
 
 type point struct {
 	value types.Datum
@@ -113,6 +118,25 @@ func prepareStringArrays(n int, collation string) ([]*point, []point) {
 	return ret1, ret2
 }
 
+func prepareStringArrayReverse(n int, collation string) []*point {
+	ret1 := make([]*point, n)
+	for i := 0; i < n; i++ {
+		d := types.NewDatum(getRandomString())
+		d.SetCollation(collation)
+		ret1[i] = &point{value: d}
+	}
+	sorter := &pointSorter1{points: ret1, sc: new(stmtctx.StatementContext)}
+	sort.Sort(sorter)
+	return ret1
+	/*
+		ret2 := make([]*point, n)
+		for j := 0; j < n; j++ {
+			ret2[j] = ret1[n-j-1]
+		}
+		return ret2
+	*/
+}
+
 func prepareDecimalArrays(n int) ([]*point, []point) {
 	ret1 := make([]*point, n)
 	ret2 := make([]point, n)
@@ -169,6 +193,7 @@ func heapSort(h *PointHeap, data []*point) []*point {
 }
 
 func main() {
+	collate.EnableNewCollations()
 	N := 10
 	pdata, data := prepareStringArrays(N, "utf8mb4_general_ci")
 	// pdata, data := prepareIntArrays(N)
