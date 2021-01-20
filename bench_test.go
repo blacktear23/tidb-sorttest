@@ -21,58 +21,6 @@ func init() {
 	pdata5 = prepareStringArrayReverse(10000, "utf8mb4_general_ci")
 }
 
-func BenchmarkPointerArraySort_StringUtf8Mb4(b *testing.B) {
-	sc := new(stmtctx.StatementContext)
-	datas := make([][]*point, b.N)
-	for i := 0; i < b.N; i++ {
-		cpdata := make([]*point, 10000)
-		copy(cpdata, pdata1)
-		datas[i] = cpdata
-	}
-
-	b.ResetTimer()
-	var sorter *pointSorter1
-	for i := 0; i < b.N; i++ {
-		sorter = &pointSorter1{points: datas[i], sc: sc}
-		sorter.lessCount = 0
-		sort.Sort(sorter)
-	}
-}
-
-func BenchmarkArraySort_StringUtf8Mb4(b *testing.B) {
-	sc := new(stmtctx.StatementContext)
-	datas := make([][]point, b.N)
-	for i := 0; i < b.N; i++ {
-		cdata := make([]point, 10000)
-		copy(cdata, data1)
-		datas[i] = cdata
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sorter := &pointSorter2{points: datas[i], sc: sc}
-		sort.Sort(sorter)
-	}
-}
-
-func BenchmarkHeapSort_StringUtf8Mb4(b *testing.B) {
-	sc := new(stmtctx.StatementContext)
-	datas := make([][]*point, b.N)
-	for i := 0; i < b.N; i++ {
-		cpdata := make([]*point, 10000)
-		copy(cpdata, pdata1)
-		datas[i] = cpdata
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		h := new(PointHeap)
-		h.sc = sc
-		h.lessCount = 0
-		heapSort(h, datas[i])
-	}
-}
-
 func BenchmarkPointerArraySort_StringUtf8bin(b *testing.B) {
 	sc := new(stmtctx.StatementContext)
 	datas := make([][]*point, b.N)
@@ -113,6 +61,58 @@ func BenchmarkHeapSort_StringUtf8bin(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		cpdata := make([]*point, 10000)
 		copy(cpdata, pdata2)
+		datas[i] = cpdata
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		h := new(PointHeap)
+		h.sc = sc
+		h.lessCount = 0
+		heapSort(h, datas[i])
+	}
+}
+
+func BenchmarkPointerArraySort_StringUtf8Mb4(b *testing.B) {
+	sc := new(stmtctx.StatementContext)
+	datas := make([][]*point, b.N)
+	for i := 0; i < b.N; i++ {
+		cpdata := make([]*point, 10000)
+		copy(cpdata, pdata1)
+		datas[i] = cpdata
+	}
+
+	b.ResetTimer()
+	var sorter *pointSorter1
+	for i := 0; i < b.N; i++ {
+		sorter = &pointSorter1{points: datas[i], sc: sc}
+		sorter.lessCount = 0
+		sort.Sort(sorter)
+	}
+}
+
+func BenchmarkArraySort_StringUtf8Mb4(b *testing.B) {
+	sc := new(stmtctx.StatementContext)
+	datas := make([][]point, b.N)
+	for i := 0; i < b.N; i++ {
+		cdata := make([]point, 10000)
+		copy(cdata, data1)
+		datas[i] = cdata
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		sorter := &pointSorter2{points: datas[i], sc: sc}
+		sort.Sort(sorter)
+	}
+}
+
+func BenchmarkHeapSort_StringUtf8Mb4(b *testing.B) {
+	sc := new(stmtctx.StatementContext)
+	datas := make([][]*point, b.N)
+	for i := 0; i < b.N; i++ {
+		cpdata := make([]*point, 10000)
+		copy(cpdata, pdata1)
 		datas[i] = cpdata
 	}
 
