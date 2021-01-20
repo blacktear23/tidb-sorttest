@@ -19,6 +19,7 @@ type point struct {
 func rangePointLess1(a, b *point, sc *stmtctx.StatementContext) bool {
 	cmp, err := a.value.CompareDatum(sc, &b.value)
 	if err != nil {
+		fmt.Println("Compare Error:", err)
 		return true
 	}
 	return cmp < 0
@@ -82,6 +83,13 @@ func getRandomInt() uint32 {
 	return rand.Uint32()
 }
 
+func getRandomDecimal() *types.MyDecimal {
+	f64 := rand.NormFloat64()
+	d := new(types.MyDecimal)
+	d.FromFloat64(f64)
+	return d
+}
+
 func prepareIntArrays(n int) ([]*point, []point) {
 	ret1 := make([]*point, n)
 	ret2 := make([]point, n)
@@ -99,6 +107,17 @@ func prepareStringArrays(n int, collation string) ([]*point, []point) {
 	for i := 0; i < n; i++ {
 		d := types.NewDatum(getRandomString())
 		d.SetCollation(collation)
+		ret1[i] = &point{value: d}
+		ret2[i] = point{value: d}
+	}
+	return ret1, ret2
+}
+
+func prepareDecimalArrays(n int) ([]*point, []point) {
+	ret1 := make([]*point, n)
+	ret2 := make([]point, n)
+	for i := 0; i < n; i++ {
+		d := types.NewDatum(getRandomDecimal())
 		ret1[i] = &point{value: d}
 		ret2[i] = point{value: d}
 	}
@@ -138,25 +157,53 @@ func (h *PointHeap) Pop() interface{} {
 	return x
 }
 
-func heapSort(h *PointHeap, data []*point) (*PointHeap, []*point) {
+func heapSort(h *PointHeap, data []*point) []*point {
+	h.points = data
 	heap.Init(h)
-	for _, item := range data {
-		heap.Push(h, item)
+	ndata := len(data)
+	ret := make([]*point, ndata)
+	for i := 0; i < ndata; i++ {
+		ret[i] = heap.Pop(h).(*point)
 	}
-	return h, h.points
+	return ret
 }
 
 func main() {
-	pdata, data := prepareStringArrays(10000, "utf8mb4_general_ci")
+	N := 10
+	pdata, data := prepareStringArrays(N, "utf8mb4_general_ci")
+	// pdata, data := prepareIntArrays(N)
+	hpdata := make([]*point, N)
+	copy(hpdata, pdata)
+	for i := 0; i < N; i++ {
+		if hpdata[i] != pdata[i] {
+			fmt.Println("Error: ", hpdata[i], pdata[i])
+		}
+		fmt.Println(hpdata[i].value.GetString())
+	}
 	sc := new(stmtctx.StatementContext)
 
 	start := time.Now()
 	sorter1 := &pointSorter1{points: pdata, sc: sc}
 	sort.Sort(sorter1)
 	fmt.Println("Pointer Array Sort Use Time", time.Now().Sub(start))
+	fmt.Println("lessCount:", sorter1.lessCount)
 
 	start = time.Now()
 	sorter2 := &pointSorter2{points: data, sc: sc}
 	sort.Sort(sorter2)
 	fmt.Println("Array Sort Use Time", time.Now().Sub(start))
+
+	start = time.Now()
+	h := new(PointHeap)
+	h.sc = sc
+	ret := heapSort(h, hpdata)
+	fmt.Println("Heap Sort Use Time", time.Now().Sub(start))
+	fmt.Println("lessCount:", h.lessCount)
+
+	for i := 0; i < len(hpdata); i++ {
+		cmp, _ := ret[i].value.CompareDatum(sc, &sorter1.points[i].value)
+		if cmp != 0 {
+			fmt.Println("Error: ", i, ret[i].value.GetString(), sorter1.points[i].value.GetString())
+		}
+	}
 }
