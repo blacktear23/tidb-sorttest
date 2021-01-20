@@ -82,22 +82,23 @@ func getRandomInt() uint32 {
 	return rand.Uint32()
 }
 
-func preparePointerArray(n int) []*point {
-	ret := make([]*point, n)
-	for i := 0; i < n; i++ {
-		d := types.NewDatum(getRandomString())
-		ret[i] = &point{value: d}
-	}
-	return ret
-}
-
-func prepareArrays(n int) ([]*point, []point) {
+func prepareIntArrays(n int) ([]*point, []point) {
 	ret1 := make([]*point, n)
 	ret2 := make([]point, n)
 	for i := 0; i < n; i++ {
-		// d := types.NewDatum(getRandomInt())
+		d := types.NewDatum(getRandomInt())
+		ret1[i] = &point{value: d}
+		ret2[i] = point{value: d}
+	}
+	return ret1, ret2
+}
+
+func prepareStringArrays(n int, collation string) ([]*point, []point) {
+	ret1 := make([]*point, n)
+	ret2 := make([]point, n)
+	for i := 0; i < n; i++ {
 		d := types.NewDatum(getRandomString())
-		d.SetCollation("utf8mb4_general_ci")
+		d.SetCollation(collation)
 		ret1[i] = &point{value: d}
 		ret2[i] = point{value: d}
 	}
@@ -146,7 +147,7 @@ func heapSort(h *PointHeap, data []*point) (*PointHeap, []*point) {
 }
 
 func main() {
-	pdata, data := prepareArrays(10000)
+	pdata, data := prepareStringArrays(10000, "utf8mb4_general_ci")
 	sc := new(stmtctx.StatementContext)
 
 	start := time.Now()
